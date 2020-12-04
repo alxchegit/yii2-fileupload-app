@@ -9,6 +9,7 @@ use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
+use app\models\User;
 
 class SiteController extends Controller
 {
@@ -20,8 +21,13 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout'],
+                'only' => ['logout', 'signup'],
                 'rules' => [
+                    [
+                        'actions' => ['signup'],
+                        'allow' => true,
+                        'roles' => ['?'],
+                    ],
                     [
                         'actions' => ['logout'],
                         'allow' => true,
@@ -61,8 +67,17 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        Yii::$app->db->createCommand("Select * from `user`")->queryAll();
-        return $this->render('index');
+
+        $model = new LoginForm();
+        if ($model->load(Yii::$app->request->post()) && $model->login()) {
+            return $this->goBack();
+        } else {
+            $model->password = '';
+
+            return $this->render('index', [
+                'model' => $model,
+            ]);
+        }
     }
 
     /**
@@ -99,6 +114,25 @@ class SiteController extends Controller
         return $this->goHome();
     }
 
+    
+    /**
+     * Signs user up.
+     *
+     * @return mixed
+     */
+    public function actionSignup()
+    {
+        $model = new SignupForm();
+        if ($model->load(Yii::$app->request->post()) && $model->signup()) {
+            Yii::$app->session->setFlash('success', "\"$model->username\"".' Thank you for registration.');
+            return $this->goHome();
+        }
+
+        return $this->render('signup', [
+            'model' => $model,
+        ]);
+    }
+    
     /**
      * Displays contact page.
      *
