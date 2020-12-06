@@ -2,7 +2,7 @@
 
 namespace app\models;
 
-use Yii;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "files".
@@ -27,13 +27,29 @@ class Files extends \yii\db\ActiveRecord
     }
 
     /**
+     * Get files by User id
+     * {@inheritdoc}
+     */
+    public static function findFilesByUserId($id)
+    {
+        return static::findAll(['username' => $id]);
+    }
+
+    public function behaviors()
+    {
+        return [
+            TimestampBehavior::className(),
+        ];
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['username', 'url', 'title', 'created_at', 'updated_at'], 'required'],
-            [['username', 'created_at', 'updated_at'], 'integer'],
+            [['username', 'url', 'title'], 'required'],
+            [['username'], 'integer'],
             [['url'], 'string', 'max' => 1000],
             [['title'], 'string', 'max' => 250],
             [['username'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['username' => 'id']],
@@ -49,8 +65,8 @@ class Files extends \yii\db\ActiveRecord
             'id' => 'ID',
             'username' => 'Username',
             'url' => 'Url',
-            'title' => 'Title',
-            'created_at' => 'Created At',
+            'title' => 'Название',
+            'created_at' => 'Загружен',
             'updated_at' => 'Updated At',
         ];
     }

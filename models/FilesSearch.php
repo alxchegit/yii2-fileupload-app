@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Files;
@@ -58,10 +59,9 @@ class FilesSearch extends Files
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'id' => $this->id,
-            'username' => $this->username,
+
+            'username' => Yii::$app->user->id,
             'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
         ]);
 
         $query->andFilterWhere(['like', 'url', $this->url])

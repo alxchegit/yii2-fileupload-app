@@ -1,7 +1,8 @@
 <?php
 
-use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\helpers\Html;
+
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\FilesSearch */
@@ -15,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Files', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Загрузить файлы', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
@@ -26,12 +27,15 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
-            'username',
-            'url:url',
             'title',
-            'created_at',
-            //'updated_at',
+            [
+                'attribute' => 'url',
+                'value' => function($data){
+                    return Html::a("$data->url",'download?path='.$data->url);
+                    },
+                'format' => 'raw',
+            ],
+            ['attribute' => 'created_at', 'format' => ['date', 'php:Y-m-d H:i:s']],
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

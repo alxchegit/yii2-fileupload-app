@@ -3,17 +3,14 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
-
+/* @var $message */
 /* @var $this yii\web\View */
 /* @var $model app\models\UploadForm */
 
-$this->title = 'Create Files';
-$this->params['breadcrumbs'][] = ['label' => 'Files', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="files-create">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+<div class="files-yandex_update">
+    <h1> <?= $message; ?> </h1>
 
     <?php $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]) ?>
 
@@ -24,6 +21,5 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 
     <?php ActiveForm::end() ?>
-
 
 </div>

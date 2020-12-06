@@ -1,9 +1,9 @@
 <?php
 
 $params = require __DIR__ . '/params.php';
-file_exists(__DIR__ . '/params-local1.php') ? $params = require __DIR__ . '/params-local.php': '';
+file_exists(__DIR__ . '/params-local1.php') ? $params = require __DIR__ . '/params-local.php' : '';
 $db = require __DIR__ . '/db.php';
-file_exists(__DIR__ . '/db-local1.php') ? $db = require __DIR__ . '/db-local.php': '';
+file_exists(__DIR__ . '/db-local1.php') ? $db = require __DIR__ . '/db-local.php' : '';
 
 $config = [
     'id' => 'basic-console',
@@ -12,7 +12,7 @@ $config = [
     'controllerNamespace' => 'app\commands',
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
-        '@npm'   => '@vendor/npm-asset',
+        '@npm' => '@vendor/npm-asset',
         '@tests' => '@app/tests',
     ],
     'components' => [
