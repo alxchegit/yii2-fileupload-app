@@ -113,3 +113,11 @@ a.desc:after {
 .nav > li > form > button.logout:focus {
     outline: none;
 }
+
+.body-content {
+    margin-top: 100px;
+}
+
+.index-login_form form>div.form-group>* {
+    float: none;
+}

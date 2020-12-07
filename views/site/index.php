@@ -11,9 +11,11 @@ $this->title = Yii::$app->name;
 
     <div class="jumbotron">
         <h1>Приветствуем на <br>"<?= Yii::$app->name ?>"!</h1>
-        <?php if (Yii::$app->user->isGuest) { ?>
+        
+    </div>
+    <?php if (Yii::$app->user->isGuest) { ?>
             <p class="lead">Чтобы начать пользоваться нашими супер-пупер мега новыми фичами, Вам необходимо сначала
-                зарегистрироваться</p>
+                зарегистрироваться или войти под своим логином</p>
 
             <div class="index-login_form">
                 <?= $this->render('_index_login_form', [
@@ -23,9 +25,8 @@ $this->title = Yii::$app->name;
         <?php } else { ?>
             <div class="body-content">
                 <div class="row">
-                    <p> <?= Html::a('Перейти к файлам', 'files/index', ['class' => 'btn btn-lg btn-success']) ?></p>
+                    <p> <?= Html::a('Перейти к файлам', 'files/index', ['class' => 'btn btn-lg btn-success col-lg-3 col-lg-offset-5']) ?></p>
                 </div>
             </div>
         <?php } ?>
-    </div>
 </div>

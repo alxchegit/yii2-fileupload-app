@@ -20,8 +20,8 @@
         "yiisoft/yii2-swiftmailer": "~2.0.0 || ~2.1.0",
         "strider2038/yii2-yandex-disk-tools": "dev-master",
         "nixsolutions/yandex-php-library": "^3.0",
-      "ext-curl": "*",
-        "ext-json": "*"
+      "ext-curl": "^7.3",
+        "ext-json": "^1.7"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

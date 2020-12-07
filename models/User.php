@@ -38,6 +38,45 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return '{{%user}}';
     }
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function behaviors()
+    {
+        return [
+            TimestampBehavior::className(),
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function rules()
+    {
+        return [
+            ['role', 'default', 'value' => self::ROLE_USER],
+            ['role', 'in', 'range' => self::rangeRole()],
+
+            ['status', 'default', 'value' => self::STATUS_ACTIVE],
+            ['status', 'in', 'range' => self::rangeStatus()],
+        ];
+    }
+/**
+ * 
+ * {@inheritdoc}
+ */
+    public function attributeLabels()
+    {
+        return [
+            'password_hash' => 'Пароль',
+            'username' => 'Логин',
+            'status' => 'Статус',
+            'role' => 'Роль',
+            'email' => 'E-mail',
+
+        ];
+    }
 
     /**
      * {@inheritdoc}
@@ -115,29 +154,6 @@ class User extends ActiveRecord implements IdentityInterface
         ]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function behaviors()
-    {
-        return [
-            TimestampBehavior::className(),
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            ['role', 'default', 'value' => self::ROLE_USER],
-            ['role', 'in', 'range' => self::rangeRole()],
-
-            ['status', 'default', 'value' => self::STATUS_ACTIVE],
-            ['status', 'in', 'range' => self::rangeStatus()],
-        ];
-    }
 
     public static function rangeRole()
     {
@@ -156,17 +172,6 @@ class User extends ActiveRecord implements IdentityInterface
         ];
     }
 
-    public function attributeLabels()
-    {
-        return [
-            'password_hash' => 'Пароль',
-            'username' => 'Логин',
-            'status' => 'Статус',
-            'role' => 'Роль',
-            'email' => 'E-mail',
-
-        ];
-    }
 
     /**
      * {@inheritdoc}

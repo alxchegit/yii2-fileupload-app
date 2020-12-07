@@ -8,7 +8,7 @@ use yii\helpers\Html;
 /* @var $searchModel app\models\FilesSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Files';
+$this->title = 'Мои файлы';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="files-index">
@@ -16,10 +16,8 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Загрузить файлы', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Загрузить файлы', ['yandex-upload'], ['class' => 'btn btn-success']) ?>
     </p>
-
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -37,7 +35,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             ['attribute' => 'created_at', 'format' => ['date', 'php:Y-m-d H:i:s']],
 
-            ['class' => 'yii\grid\ActionColumn'],
+            ['class' => 'yii\grid\ActionColumn', 'template' => '{update} {delete}',],
         ],
     ]); ?>
 

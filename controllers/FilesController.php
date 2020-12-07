@@ -2,10 +2,9 @@
 
 namespace app\controllers;
 
+use Yii;
 use app\models\User;
 use Faker\Provider\File;
-use phpDocumentor\Reflection\Types\String_;
-use Yii;
 use app\models\Files;
 use app\models\FilesSearch;
 use app\models\UploadForm;
@@ -13,9 +12,6 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\UploadedFile;
 use yii\filters\VerbFilter;
-use strider2038\yandexDiskTools;
-use strider2038\yandexDiskTools\Client;
-use Yandex\Disk\DiskClient;
 
 /**
  * FilesController implements the CRUD actions for Files model.
@@ -26,7 +22,6 @@ class FilesController extends Controller
     private $YandexError;
     private $YandexFilePath;
 
-    const OAUTH_TOKEN = 'OAuth AgAAAAAw8-RIAAa_apLyY7o3wkFhhsEZn4ggt6o';
     /**
      * {@inheritdoc}
      */
@@ -109,7 +104,7 @@ class FilesController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+            return $this->redirect(['index']);
         }
 
         return $this->render('update', [
@@ -147,6 +142,10 @@ class FilesController extends Controller
         throw new NotFoundHttpException('The requested page does not exist.');
     }
 
+    /**
+     * Контролер загрузки файла на ЯндексДиск
+     * 
+     */
     public function actionYandexUpload()
     {
         $this->isAllow();
@@ -161,7 +160,7 @@ class FilesController extends Controller
                 $files->title = $this->YandexFilePath['baseName'];
                 $files->url = $this->YandexFilePath['fullPath'];
                 if($files->validate() && $files->save()){
-                    return $this->redirect('files/index');
+                    return $this->redirect('index');
                 }
             }
 
@@ -176,22 +175,21 @@ class FilesController extends Controller
     }
 
     /**
-     *
+     * Запуск скачки файла по url переданному в GET
+     * 
      */
     public function actionDownload()
     {
-       $message = 'Message';
+        $this->isAllow();
+      
         if(Yii::$app->request->isGet) {
             $path = Yii::$app->request->get('path');
-
-            $message = $this->downloadFromYandexDisk($path);
+           
+            $this->downloadFromYandexDisk($path);
+                 
+            
         }
-
-
-       return $this->render('download', [
-           'message' => $message,
-       ]);
-
+        $this->response->redirect('index');
     }
 
     /**
@@ -205,11 +203,17 @@ class FilesController extends Controller
         }
     }
 
+    /**
+     * Произвести скачивание файла с ЯндексДиска по заданному $path
+     * 
+     * @param string $path
+     * @return bool
+     */
     private function downloadFromYandexDisk(string $path)
     {
-       $token = self::OAUTH_TOKEN;
+       $token = Yii::$app->params['OAuth'];
        $yd_file = $path;
-
+        
         $ch = curl_init('https://cloud-api.yandex.net/v1/disk/resources/download?path=' . urlencode($yd_file));
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: ' . $token));
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -218,21 +222,38 @@ class FilesController extends Controller
         $res = curl_exec($ch);
         curl_close($ch);
 
+//  Не удалось у меня напрямую отправить файл из урла пользователю для скачивания
+//  Яндекс диск постоянно отвергает такие попытки.
+//  Дает спокойно прочитать файл из урла
+//  Дает сохранить его на сервере
+//  Но ни редиректы ни response не работают.
+//  Пришлось сначало сохранять файл на сервере, а потом отдавать пользователю на скачивание  
+//  
         $res = json_decode($res, true);
         if (empty($res['error'])) {
-            $file_name = 'uploads/' . basename($yd_file);
-            $file = @fopen($file_name, 'w');
-
-            $ch = curl_init($res['href']);
-            curl_setopt($ch, CURLOPT_FILE, $file);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: OAuth ' . $token));
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_HEADER, false);
-            curl_exec($ch);
-            curl_close($ch);
-            fclose($file);
+            $file_name = 'uploads/' . basename($yd_file);          
+            $newfname = $path;
+            $file = fopen ($res['href'], 'rb');
+            if ($file) {
+                $newf = fopen($file_name, 'wb');
+                if ($newf) {
+                    while(!feof($file)) {
+                        fwrite($newf, fread($file, 1024 * 8), 1024 * 8);
+                    }
+                }
+            }
+            if ($file) {
+                fclose($file);
+            }
+            if ($newf) {
+                fclose($newf);
+            }
+            $this->response->sendFile($file_name)->send();
+            unlink($file_name);
+            return true;
         }
+        $this->YandexError = $res;
+        return false;
     }
     /**
      * Создает каталог в соответствии с id пользователя
@@ -242,7 +263,7 @@ class FilesController extends Controller
      */
     private function getYandexDirectory( $dir )
     {
-        $token = self::OAUTH_TOKEN;
+        $token = Yii::$app->params['OAuth'];
         $path = 'disk:/Приложения/hotgear_fileupload/' . $dir ;
 
         $ch = curl_init('https://cloud-api.yandex.net/v1/disk/resources/?path=' . urlencode($path));
@@ -261,7 +282,8 @@ class FilesController extends Controller
     }
 
     /**
-     *
+     * Загрузка файла на ЯндексДиск в папку id пользователя
+     * 
      * @param UploadedFile $file
      * @return bool
      */
