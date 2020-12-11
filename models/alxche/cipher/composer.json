@@ -1,0 +1,32 @@
+{
+    "name": "alxche/cipher",
+    "type": "decorator",
+    "description": "Decorator for PSR-7 StreamInterface",
+    "keywords": ["psr", "psr-7", "decorator","encryption"],
+    "homepage": "https://github.com/alxchegit/cipher",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Alxche"
+        }
+    ],
+    "require": {
+        "php": ">=7.1",
+        "ext-openssl": "*",
+        "guzzlehttp/psr7": "~1.0",
+        "psr/http-message": "~1.0"
+      },
+      "require-dev": {
+        "phpunit/phpunit": "^6.0"
+      },
+    "autoload": {
+        "psr-4": {
+            "Alxche\\Cipher\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Alxche\\Cipher\\": "src/"
+        }
+      }
+}
